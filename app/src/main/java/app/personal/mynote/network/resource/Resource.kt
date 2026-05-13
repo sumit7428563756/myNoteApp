@@ -1,5 +1,4 @@
-package app.personal.mynote.network
-
+package app.personal.mynote.network.resource
 
 sealed class Resource<T>(
     val data: T? = null,
