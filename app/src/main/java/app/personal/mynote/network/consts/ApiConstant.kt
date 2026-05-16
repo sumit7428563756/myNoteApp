@@ -3,7 +3,7 @@ package app.personal.mynote.network.consts
 object ApiConstant {
 
     //base url
-    const val BASE_URL = "https://authentication-698a.onrender.com/"
+    const val BASE_URL = "https://authentication-698a.onrender.com/api/auth/"
 
     //authentication endpoints
     const val SEND_OTP = "send-otp"
