@@ -1,7 +1,7 @@
-package app.personal.mynote.presentation
+package app.personal.mynote.presentation.authentication
 
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -41,12 +42,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.personal.mynote.domain.viewmodel.AuthViewModel
 import app.personal.mynote.network.resource.NetworkResult
+import app.personal.mynote.utils.components.FullWidthNumberField
+import app.personal.mynote.utils.components.GradientLoadingButton
 
 @Composable
 fun SendOtpScreen(
     viewModel: AuthViewModel = hiltViewModel(),
 ) {
 
+    val context = LocalContext.current
     var phone by rememberSaveable {
         mutableStateOf("")
     }
@@ -70,13 +74,46 @@ fun SendOtpScreen(
             is NetworkResult.Success -> {
 
                 // success
-
+                Toast.makeText(context, "Otp sent successfully", Toast.LENGTH_LONG).show()
             }
 
             is NetworkResult.Error -> {
 
                 // show snackbar
+                Toast.makeText(
+                    context,
+                    (sendOtpState as NetworkResult.Error).message,
+                    Toast.LENGTH_LONG
+                ).show()
 
+            }
+
+            else -> Unit
+        }
+    }
+
+
+    LaunchedEffect(verifyOtpState) {
+
+        when (verifyOtpState) {
+
+            is NetworkResult.Success -> {
+
+                Toast.makeText(
+                    context,
+                    "OTP verified successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            }
+
+            is NetworkResult.Error -> {
+
+                Toast.makeText(
+                    context,
+                    (verifyOtpState as NetworkResult.Error).message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             else -> Unit
@@ -131,10 +168,9 @@ fun SendOtpScreen(
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                OutlinedTextField(
+                FullWidthNumberField(
                     value = phone,
                     onValueChange = {
-
                         if (it.length <= 10) {
 
                             phone = it.filter { char ->
@@ -142,20 +178,9 @@ fun SendOtpScreen(
                             }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = {
-                        Text("Mobile number")
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFD0D0D0),
-                        unfocusedBorderColor = Color(0xFFD0D0D0),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    placeholder = "Mobile Number",
+                    maxLength = 10,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -165,10 +190,10 @@ fun SendOtpScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    OutlinedTextField(
+
+                    FullWidthNumberField(
                         value = otp,
                         onValueChange = {
-
                             if (it.length <= 6) {
 
                                 otp = it.filter { char ->
@@ -176,20 +201,9 @@ fun SendOtpScreen(
                                 }
                             }
                         },
-                        modifier = Modifier.weight(1f),
-                        placeholder = {
-                            Text("Enter OTP")
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFD0D0D0),
-                            unfocusedBorderColor = Color(0xFFD0D0D0),
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        )
+                        placeholder = "Enter Otp",
+                        maxLength = 6,
+                        modifier = Modifier.weight(1f)
                     )
 
                     Spacer(modifier = Modifier.width(12.dp))
@@ -242,52 +256,15 @@ fun SendOtpScreen(
 
                 Spacer(modifier = Modifier.height(22.dp))
 
-                Button(
-                    onClick = { viewModel.verifyOtp(phone,otp) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    contentPadding = PaddingValues(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    )
-                ) {
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    listOf(
-                                        Color(0xFFB03CF7),
-                                        Color(0xFF4B8BFF)
-                                    )
-                                ),
-                                shape = RoundedCornerShape(14.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        Text(
-                            text = "Continue",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                GradientLoadingButton(
+                    text = "Continue",
+                    isLoading = verifyOtpState is NetworkResult.Loading,
+                    onClick = {
+                        viewModel.verifyOtp(phone, otp)
                     }
-                }
+                )
 
-                if (sendOtpState is NetworkResult.Error) {
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = sendOtpState.message ?: "",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
         }
     }

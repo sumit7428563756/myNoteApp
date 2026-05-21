@@ -1,5 +1,6 @@
 package app.personal.mynote.network.interceptor
 
+import app.personal.mynote.network.service.AuthRequired
 import app.personal.mynote.utils.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -13,26 +14,38 @@ class AuthInterceptor @Inject constructor(
         chain: Interceptor.Chain
     ): Response {
 
-        val token = tokenManager.getToken()
+        val originalRequest = chain.request()
 
-        val request = chain.request()
-            .newBuilder()
-            .apply {
+        val invocation =
+            originalRequest.tag(retrofit2.Invocation::class.java)
 
-                token?.let {
-                    addHeader(
-                        "Authorization",
-                        "Bearer $it"
-                    )
-                }
+        val requiresAuth =
+            invocation?.method()?.isAnnotationPresent(
+                AuthRequired::class.java
+            ) ?: false
 
-                addHeader(
-                    "Accept",
-                    "application/json"
+        val requestBuilder =
+            originalRequest.newBuilder()
+
+        if (requiresAuth) {
+
+            tokenManager.getToken()?.let { token ->
+
+                requestBuilder.addHeader(
+                    "Authorization",
+                    "Bearer $token"
                 )
             }
-            .build()
+        }
 
-        return chain.proceed(request)
+        requestBuilder.addHeader(
+            "Accept",
+            "application/json"
+        )
+
+        return chain.proceed(
+            requestBuilder.build()
+        )
+
     }
 }
