@@ -1,9 +1,11 @@
 package app.personal.mynote.network.service
 
+import app.personal.mynote.model.request.LoginRequest
 import app.personal.mynote.model.response.SendOtpResponse
 import app.personal.mynote.model.request.SendOtpRequest
 import app.personal.mynote.model.request.SignupRequest
 import app.personal.mynote.model.request.VerifyOtpRequest
+import app.personal.mynote.model.response.LoginResponse
 import app.personal.mynote.model.response.SignUpResponse
 import app.personal.mynote.model.response.VerifyOtpResponse
 import app.personal.mynote.network.consts.ApiConstant
@@ -38,6 +40,12 @@ interface ApiService {
         @Body request: SignupRequest
     ): Response<SignUpResponse>
 
+
+    //Login
+    @POST(ApiConstant.LOGIN)
+    suspend fun login(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
 
 
 }

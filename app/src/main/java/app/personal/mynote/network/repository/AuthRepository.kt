@@ -1,5 +1,6 @@
 package app.personal.mynote.network.repository
 
+import app.personal.mynote.model.response.LoginResponse
 import app.personal.mynote.model.response.SendOtpResponse
 import app.personal.mynote.model.response.SignUpResponse
 import app.personal.mynote.model.response.VerifyOtpResponse
@@ -23,4 +24,7 @@ interface AuthRepository {
         password: String,
         confirmPassword: String
     ): NetworkResult<SignUpResponse>
+
+    // login
+    suspend fun login(phone: String, password: String): NetworkResult<LoginResponse>
 }

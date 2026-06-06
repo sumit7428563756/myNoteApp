@@ -1,8 +1,10 @@
 package app.personal.mynote.domain.repositoryImpl
 
+import app.personal.mynote.model.request.LoginRequest
 import app.personal.mynote.model.request.SendOtpRequest
 import app.personal.mynote.model.request.SignupRequest
 import app.personal.mynote.model.request.VerifyOtpRequest
+import app.personal.mynote.model.response.LoginResponse
 import app.personal.mynote.model.response.SendOtpResponse
 import app.personal.mynote.model.response.SignUpResponse
 import app.personal.mynote.model.response.VerifyOtpResponse
@@ -56,6 +58,19 @@ class AuthRepositoryImp @Inject constructor(
                 SignupRequest(
                     name, username, email, age, gender, password, confirmPassword
                 )
+            )
+        }
+    }
+
+
+    // login
+    override suspend fun login(
+        phone: String,
+        password: String
+    ): NetworkResult<LoginResponse> {
+        return safeApiCall.execute {
+            api.login(
+                LoginRequest(phone, password)
             )
         }
     }

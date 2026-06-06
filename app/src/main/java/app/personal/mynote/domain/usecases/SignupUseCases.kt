@@ -17,7 +17,7 @@ class SignupUseCases @Inject constructor(
         gender: String,
         password: String,
         confirmPassword: String
-    ): NetworkResult<SignUpResponse> {
+    ): NetworkResult<SignUpResponse>   {
 
         if (
             name.isBlank() ||

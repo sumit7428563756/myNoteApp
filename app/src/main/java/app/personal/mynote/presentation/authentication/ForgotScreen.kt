@@ -1,5 +1,6 @@
 package app.personal.mynote.presentation.authentication
 
+
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -49,7 +50,7 @@ import app.personal.mynote.utils.components.AppTextField
 import app.personal.mynote.utils.components.GradientLoadingButton
 
 @Composable
-fun SendOtpScreen(
+fun ForgotScreen(
     navigationManager: NavigationManager,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -60,6 +61,14 @@ fun SendOtpScreen(
     }
 
     var otp by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var newPassword by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var confirmPassword by rememberSaveable {
         mutableStateOf("")
     }
 
@@ -159,7 +168,7 @@ fun SendOtpScreen(
             ) {
 
                 Text(
-                    text = "Phone verification",
+                    text = "Reset Password",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF111111)
@@ -168,7 +177,7 @@ fun SendOtpScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "We'll text you a one-time code.",
+                    text = "Change Your Old Password to Continue",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -253,6 +262,24 @@ fun SendOtpScreen(
                         }
                     }
                 }
+
+                // PASSWORD
+                AppTextField(
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
+                    placeholder = "Enter Password",
+                    isPassword = true
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // CONFIRM PASSWORD
+                AppTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    placeholder = "Confirm Password",
+                    isPassword = true
+                )
 
                 Spacer(modifier = Modifier.height(22.dp))
 

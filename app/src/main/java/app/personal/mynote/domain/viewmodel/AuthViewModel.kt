@@ -3,9 +3,11 @@ package app.personal.mynote.domain.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import app.personal.mynote.domain.usecases.LoginUseCases
 import app.personal.mynote.domain.usecases.SendOtpUseCase
 import app.personal.mynote.domain.usecases.SignupUseCases
 import app.personal.mynote.domain.usecases.VerifyOtpUseCase
+import app.personal.mynote.model.response.LoginResponse
 import app.personal.mynote.model.response.SendOtpResponse
 import app.personal.mynote.model.response.SignUpResponse
 import app.personal.mynote.model.response.VerifyOtpResponse
@@ -22,6 +24,7 @@ class AuthViewModel @Inject constructor(
     private val sendOtpUseCase: SendOtpUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
     private val signupUseCase: SignupUseCases,
+    private val loginUseCases: LoginUseCases,
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
@@ -41,6 +44,10 @@ class AuthViewModel @Inject constructor(
         MutableStateFlow<NetworkResult<SignUpResponse>>(NetworkResult.Idle())
     val signupState = _signupState.asStateFlow()
 
+    // login
+    private val _loginState =
+        MutableStateFlow<NetworkResult<LoginResponse>>(NetworkResult.Idle())
+    val loginState = _loginState.asStateFlow()
 
 
     private fun <T> executeApiCall(
@@ -112,11 +119,33 @@ class AuthViewModel @Inject constructor(
         confirmPassword: String
     ) {
         executeApiCall(
-          state = _signupState
-        ){
-          signupUseCase(name,username,age,email,gender,password,confirmPassword)
+            state = _signupState
+        ) {
+            signupUseCase(name, username, age, email, gender, password, confirmPassword)
         }
 
+    }
+
+
+    //login
+    fun login(phone: String, password: String) {
+
+        executeApiCall(
+            state = _loginState
+        ) {
+
+            val result = loginUseCases(phone, password)
+
+            if (result is NetworkResult.Success) {
+
+                result.data?.token?.let { token ->
+
+                    tokenManager.saveToken(token)
+                }
+            }
+
+            result
+        }
     }
 
 
