@@ -58,6 +58,7 @@ fun SendOtpScreen(
     var phone by rememberSaveable {
         mutableStateOf("")
     }
+    var otpSentMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
     var otp by rememberSaveable {
         mutableStateOf("")
@@ -76,6 +77,10 @@ fun SendOtpScreen(
         when (sendOtpState) {
 
             is NetworkResult.Success -> {
+
+                val data = (sendOtpState as NetworkResult.Success).data
+
+                otpSentMessage = "OTP: ${data?.otp}"
 
                 // success
                 Toast.makeText(context, "Otp sent successfully", Toast.LENGTH_LONG).show()
@@ -265,8 +270,21 @@ fun SendOtpScreen(
                     }
                 )
 
+                Spacer(modifier = Modifier.height(14.dp))
+
+                if (!otpSentMessage.isNullOrEmpty()) {
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = otpSentMessage!!,
+                        color = Color(0xFF2E7D32), // green
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
+
     }
 }
 

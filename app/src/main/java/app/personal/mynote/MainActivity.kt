@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import app.personal.mynote.navigation.Navigate
+import app.personal.mynote.navigation.AppScaffold
 import app.personal.mynote.navigation.NavigationManager
 import app.personal.mynote.ui.theme.MyNoteTheme
+import app.personal.mynote.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -19,15 +20,19 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var navigationManager: NavigationManager
 
+    @Inject
+    lateinit var tokenManager: TokenManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       // enableEdgeToEdge()
+        // enableEdgeToEdge()
         setContent {
             MyNoteTheme {
-                Surface(modifier = Modifier.fillMaxSize(),
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                 ){
-                    Navigate(navigationManager)
+                ) {
+                    AppScaffold(navigationManager, tokenManager)
                 }
             }
         }

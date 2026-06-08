@@ -6,4 +6,14 @@ object Routes {
     const val LOGIN = "login"
 
     const val HOME = "home"
+
+    const val FORGOT = "forgot"
+
+    const val PROFILE = "Profile"
+
+    const val EDIT = "Update Profile"
+
+    const val SPLASH = "splash"
+
+
 }

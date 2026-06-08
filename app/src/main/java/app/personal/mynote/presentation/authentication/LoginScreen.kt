@@ -2,6 +2,7 @@ package app.personal.mynote.presentation.authentication
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -183,7 +184,24 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Number,
                     )
 
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Forgot Password?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Blue,
+                        modifier = Modifier
+                            .clickable(onClick = {
+                                navigationManager.navigate(
+                                    Routes.FORGOT
+                                )
+                            })
+                            .align(Alignment.End)
+                            .padding(end = 10.dp)
+                    )
+
                     Spacer(modifier = Modifier.height(22.dp))
+
 
 
                     GradientLoadingButton(

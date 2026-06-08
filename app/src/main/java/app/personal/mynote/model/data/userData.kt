@@ -16,6 +16,9 @@ data class userData(
     @SerializedName("username")
     val username: String,
 
+    @SerializedName("age")
+    val age: String,
+
     @SerializedName("email")
     val email: String,
 

@@ -36,6 +36,7 @@ fun AppTextField(
     minLength: Int = Int.MIN_VALUE,
     singleLine: Boolean = true,
     isPassword: Boolean = false,
+    readOnly : Boolean = false
 ) {
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -49,6 +50,7 @@ fun AppTextField(
                 onValueChange(input)
             }
         },
+        readOnly = readOnly,
         modifier = modifier.fillMaxWidth(),
         placeholder = { Text(text = placeholder) },
         singleLine = singleLine,

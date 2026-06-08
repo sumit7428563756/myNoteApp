@@ -1,5 +1,6 @@
 package app.personal.mynote.network.interceptor
 
+import android.util.Log
 import app.personal.mynote.network.service.AuthRequired
 import app.personal.mynote.utils.TokenManager
 import okhttp3.Interceptor
@@ -26,6 +27,9 @@ class AuthInterceptor @Inject constructor(
 
         val requestBuilder =
             originalRequest.newBuilder()
+
+        Log.d("AUTH", "Invocation = $invocation")
+        Log.d("AUTH", "requiresAuth = $requiresAuth")
 
         if (requiresAuth) {
 

@@ -56,6 +56,7 @@ fun ForgotScreen(
 ) {
 
     val context = LocalContext.current
+    var otpSentMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var phone by rememberSaveable {
         mutableStateOf("")
     }
@@ -68,35 +69,34 @@ fun ForgotScreen(
         mutableStateOf("")
     }
 
-    var confirmPassword by rememberSaveable {
-        mutableStateOf("")
-    }
 
-    val sendOtpState by viewModel
-        .sendOtpState
+    val forgotOtpState by viewModel
+        .forgotOtpState
         .collectAsStateWithLifecycle()
 
-    val verifyOtpState by viewModel
-        .verifyOtpState
+    val resetPasswordState by viewModel
+        .resetState
         .collectAsStateWithLifecycle()
 
-    LaunchedEffect(sendOtpState) {
+    LaunchedEffect(forgotOtpState) {
 
-        when (sendOtpState) {
+        when (forgotOtpState) {
 
             is NetworkResult.Success -> {
 
-                // success
+                val data = (forgotOtpState as NetworkResult.Success).data
+
+                otpSentMessage = "OTP: ${data?.otp}"
+
                 Toast.makeText(context, "Otp sent successfully", Toast.LENGTH_LONG).show()
 
             }
 
             is NetworkResult.Error -> {
 
-                // show snackbar
                 Toast.makeText(
                     context,
-                    (sendOtpState as NetworkResult.Error).message,
+                    (forgotOtpState as NetworkResult.Error).message,
                     Toast.LENGTH_LONG
                 ).show()
 
@@ -107,19 +107,19 @@ fun ForgotScreen(
     }
 
 
-    LaunchedEffect(verifyOtpState) {
+    LaunchedEffect(resetPasswordState) {
 
-        when (verifyOtpState) {
+        when (resetPasswordState) {
 
             is NetworkResult.Success -> {
 
                 Toast.makeText(
                     context,
-                    "OTP verified successfully",
+                    "Password Changed Successfully",
                     Toast.LENGTH_SHORT
                 ).show()
 
-                navigationManager.navigateAndClear(Routes.SIGN_UP)
+                navigationManager.navigateAndClear(Routes.LOGIN)
 
             }
 
@@ -127,7 +127,7 @@ fun ForgotScreen(
 
                 Toast.makeText(
                     context,
-                    (verifyOtpState as NetworkResult.Error).message,
+                    (resetPasswordState as NetworkResult.Error).message,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -220,10 +220,10 @@ fun ForgotScreen(
                     Button(
                         onClick = {
 
-                            viewModel.sendOtp(phone)
+                            viewModel.forgotOtp(phone)
 
                         },
-                        enabled = sendOtpState !is NetworkResult.Loading,
+                        enabled = forgotOtpState !is NetworkResult.Loading,
                         shape = RoundedCornerShape(14.dp),
                         contentPadding = PaddingValues(
                             horizontal = 18.dp,
@@ -245,7 +245,7 @@ fun ForgotScreen(
                             )
                     ) {
 
-                        if (sendOtpState is NetworkResult.Loading) {
+                        if (forgotOtpState is NetworkResult.Loading) {
 
                             CircularProgressIndicator(
                                 modifier = Modifier.size(18.dp),
@@ -263,35 +263,41 @@ fun ForgotScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(14.dp))
+
                 // PASSWORD
                 AppTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    placeholder = "Enter Password",
+                    placeholder = "Enter New Password",
                     isPassword = true
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
 
-                // CONFIRM PASSWORD
-                AppTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    placeholder = "Confirm Password",
-                    isPassword = true
-                )
 
                 Spacer(modifier = Modifier.height(22.dp))
 
 
                 GradientLoadingButton(
-                    text = "Continue",
-                    isLoading = verifyOtpState is NetworkResult.Loading,
+                    text = "Reset Password",
+                    isLoading = resetPasswordState is NetworkResult.Loading,
                     onClick = {
-                        viewModel.verifyOtp(phone, otp)
+                        viewModel.resetPassword(phone, otp,newPassword)
                     }
                 )
 
+                Spacer(modifier = Modifier.height(14.dp))
+
+                if (!otpSentMessage.isNullOrEmpty()) {
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = otpSentMessage!!,
+                        color = Color(0xFF2E7D32), // green
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
     }
